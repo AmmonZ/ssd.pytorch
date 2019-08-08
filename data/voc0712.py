@@ -26,8 +26,8 @@ else:
 VOC_CLASSES = ('rice',)
 
 # note: if you used our download scripts, this should be right
-VOC_ROOT = osp.join(HOME, "data/VOCdevkit/")
-
+#VOC_ROOT = osp.join(HOME, "data/VOCdevkit/")
+VOC_ROOT = osp.join(osp.abspath(osp.dirname(__file__)), "my_rice_data/VOCdevkit/")
 
 class VOCAnnotationTransform(object):
     """Transforms a VOC annotation into a Tensor of bbox coords and label index
