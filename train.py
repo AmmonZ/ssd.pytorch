@@ -90,8 +90,9 @@ def train():
 
     if args.visdom:
         import visdom
-        viz = visdom.Visdom()
         global viz
+        viz = visdom.Visdom()
+
 
     ssd_net = build_ssd('train', cfg['min_dim'], cfg['num_classes'])
     net = ssd_net
