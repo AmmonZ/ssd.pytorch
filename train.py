@@ -39,7 +39,7 @@ parser.add_argument('--num_workers', default=4, type=int,
                     help='Number of workers used in dataloading')
 parser.add_argument('--cuda', default=True, type=str2bool, #是否使用CUDA，也就是是否使用显卡
                     help='Use CUDA to train model')
-parser.add_argument('--lr', '--learning-rate', default=1e-3, type=float, #学习率设置，过高会出现loss nan
+parser.add_argument('--lr', '--learning-rate', default=1e-4, type=float, #学习率设置，过高会出现loss nan 1e-3 -> 1e-4
                     help='initial learning rate')
 parser.add_argument('--momentum', default=0.9, type=float,
                     help='Momentum value for optim')
@@ -206,7 +206,7 @@ def train():
             update_vis_plot(iteration, loss_l.item(), loss_c.item(),
                             iter_plot, epoch_plot, 'append')
 
-        if iteration != 0 and iteration % 500 == 0: #迭代多少次保存一次模型，在尝试阶段，可调低节省时间 5000->500
+        if iteration != 0 and iteration % 5000 == 0: #迭代多少次保存一次模型，在尝试阶段，可调低节省时间 5000->500
             print('Saving state, iter:', iteration)
             torch.save(ssd_net.state_dict(), 'weights/ssd300_rice_' + #保存的模型名称
                        repr(iteration) + '.pth')
