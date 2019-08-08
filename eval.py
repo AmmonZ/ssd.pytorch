@@ -35,10 +35,10 @@ def str2bool(v):
 
 parser = argparse.ArgumentParser(
     description='Single Shot MultiBox Detector Evaluation')
-parser.add_argument('--trained_model',
+parser.add_argument('--trained_model',                                  #训练之后待评估的模型路径
                     default='weights/ssd300_mAP_77.43_v2.pth', type=str,
                     help='Trained state_dict file path to open')
-parser.add_argument('--save_folder', default='eval/', type=str,
+parser.add_argument('--save_folder', default='eval/', type=str,    #评估结果保存路径
                     help='File path to save results')
 parser.add_argument('--confidence_threshold', default=0.01, type=float,
                     help='Detection confidence threshold')

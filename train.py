@@ -23,23 +23,23 @@ def str2bool(v):
 parser = argparse.ArgumentParser(
     description='Single Shot MultiBox Detector Training With Pytorch')
 train_set = parser.add_mutually_exclusive_group()
-parser.add_argument('--dataset', default='VOC', choices=['VOC', 'COCO'],
+parser.add_argument('--dataset', default='VOC', choices=['VOC', 'COCO'], #数据集选择
                     type=str, help='VOC or COCO')
 parser.add_argument('--dataset_root', default=VOC_ROOT,
                     help='Dataset root directory path')
-parser.add_argument('--basenet', default='vgg16_reducedfc.pth',
+parser.add_argument('--basenet', default='vgg16_reducedfc.pth', #预训练模型
                     help='Pretrained base model')
-parser.add_argument('--batch_size', default=32, type=int,
-                    help='Batch size for training')
+parser.add_argument('--batch_size', default=32, type=int, #batch_size越大对显卡的内存要求就越大,大小适宜则训练效果更好
+                    help='Batch size for training') #有用NVIDIA 1080TI 12G ，batch_size大小使用32的博主
 parser.add_argument('--resume', default=None, type=str,
                     help='Checkpoint state_dict file to resume training from')
-parser.add_argument('--start_iter', default=0, type=int,
+parser.add_argument('--start_iter', default=0, type=int, #迭代起始点
                     help='Resume training at this iter')
 parser.add_argument('--num_workers', default=4, type=int,
                     help='Number of workers used in dataloading')
-parser.add_argument('--cuda', default=True, type=str2bool,
+parser.add_argument('--cuda', default=True, type=str2bool, #是否使用CUDA，也就是是否使用显卡
                     help='Use CUDA to train model')
-parser.add_argument('--lr', '--learning-rate', default=1e-3, type=float,
+parser.add_argument('--lr', '--learning-rate', default=1e-3, type=float, #学习率设置，过高会出现loss nan
                     help='initial learning rate')
 parser.add_argument('--momentum', default=0.9, type=float,
                     help='Momentum value for optim')
@@ -49,7 +49,7 @@ parser.add_argument('--gamma', default=0.1, type=float,
                     help='Gamma update for SGD')
 parser.add_argument('--visdom', default=False, type=str2bool,
                     help='Use visdom for loss visualization')
-parser.add_argument('--save_folder', default='weights/',
+parser.add_argument('--save_folder', default='weights/', #模型保存地址
                     help='Directory for saving checkpoint models')
 args = parser.parse_args()
 
@@ -162,14 +162,23 @@ def train():
             adjust_learning_rate(optimizer, args.gamma, step_index)
 
         # load train data
-        images, targets = next(batch_iterator)
+        #images, targets = next(batch_iterator)
+        try:
+            images, targets = next(batch_iterator)
+        except StopIteration:
+            batch_iterator = iter(data_loader)
+            images, targets = next(batch_iterator)
 
         if args.cuda:
             images = Variable(images.cuda())
-            targets = [Variable(ann.cuda(), volatile=True) for ann in targets]
+            #targets = [Variable(ann.cuda(), volatile=True) for ann in targets]
+            with torch.no_grad():
+                targets = [Variable(ann.cuda()) for ann in targets]
         else:
             images = Variable(images)
-            targets = [Variable(ann, volatile=True) for ann in targets]
+            #targets = [Variable(ann, volatile=True) for ann in targets]
+            with torch.no_grad():
+                targets = [Variable(ann) for ann in targets]
         # forward
         t0 = time.time()
         out = net(images)
@@ -180,20 +189,23 @@ def train():
         loss.backward()
         optimizer.step()
         t1 = time.time()
-        loc_loss += loss_l.data[0]
-        conf_loss += loss_c.data[0]
+        #loc_loss += loss_l.data[0]
+        #conf_loss += loss_c.data[0]
+        loc_loss += loss_l.item()
+        conf_loss += loss_c.item()
 
         if iteration % 10 == 0:
             print('timer: %.4f sec.' % (t1 - t0))
-            print('iter ' + repr(iteration) + ' || Loss: %.4f ||' % (loss.data[0]), end=' ')
+            #print('iter ' + repr(iteration) + ' || Loss: %.4f ||' % (loss.data[0]), end=' ')
+            print('iter ' + repr(iteration) + ' || Loss: %.4f ||' % (loss.item()), end=' ')
 
         if args.visdom:
             update_vis_plot(iteration, loss_l.data[0], loss_c.data[0],
                             iter_plot, epoch_plot, 'append')
 
-        if iteration != 0 and iteration % 5000 == 0:
+        if iteration != 0 and iteration % 500 == 0: #迭代多少次保存一次模型，在尝试阶段，可调低节省时间 5000->500
             print('Saving state, iter:', iteration)
-            torch.save(ssd_net.state_dict(), 'weights/ssd300_COCO_' +
+            torch.save(ssd_net.state_dict(), 'weights/ssd300_rice_' + #保存的模型名称
                        repr(iteration) + '.pth')
     torch.save(ssd_net.state_dict(),
                args.save_folder + '' + args.dataset + '.pth')
@@ -211,7 +223,7 @@ def adjust_learning_rate(optimizer, gamma, step):
 
 
 def xavier(param):
-    init.xavier_uniform(param)
+    init.xavier_uniform_(param)
 
 
 def weights_init(m):
