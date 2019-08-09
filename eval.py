@@ -14,6 +14,7 @@ from data import VOC_CLASSES as labelmap
 import torch.utils.data as data
 
 from ssd import build_ssd
+from data import rgb_mean as rgbm
 
 import sys
 import os
@@ -22,6 +23,7 @@ import argparse
 import numpy as np
 import pickle
 import cv2
+
 
 if sys.version_info[0] == 2:
     import xml.etree.cElementTree as ET
@@ -72,7 +74,9 @@ imgsetpath = os.path.join(args.voc_root, 'VOC2007', 'ImageSets',
                           'Main', '{:s}.txt')
 YEAR = '2007'
 devkit_path = args.voc_root + 'VOC' + YEAR
-dataset_mean = (104, 117, 123)
+#dataset_mean = (104, 117, 123)
+dataset_mean = tuple(rgbm.cal_mean())
+
 set_type = 'test'
 
 
