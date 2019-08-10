@@ -1,15 +1,17 @@
 import os
 import numpy as np
 import cv2
-
+import ipdb
 def cal_mean():
-    ims_path = 'C:/Users/my/Desktop/JPEGImages/'  # 图像数据集的路径
+
+    ims_path = '/home/liufc/JPEGImages/'  # 图像数据集的路径
     ims_list = os.listdir(ims_path)
     B_means = []
     G_means = []
     R_means = []
     for im_list in ims_list:
         im = cv2.imread(ims_path + im_list)
+    
         # extrect value of diffient channel
         im_B = im[:, :, 0]
         im_G = im[:, :, 1]
@@ -31,4 +33,5 @@ def cal_mean():
     mean[1] = np.mean(a[1])
     mean[2] = np.mean(a[2])
     print('数据集的BGR平均值为\n[{}，{}，{}]'.format(mean[0], mean[1], mean[2]))
-    return a #返回list
+  
+    return mean #返回list

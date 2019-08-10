@@ -5,6 +5,7 @@ from .config import *
 import torch
 import cv2
 import numpy as np
+import ipdb
 
 def detection_collate(batch):
     """Custom collate fn for dealing with batches of images that have a different
@@ -29,7 +30,9 @@ def detection_collate(batch):
 
 def base_transform(image, size, mean):
     x = cv2.resize(image, (size, size)).astype(np.float32)
+
     x -= mean
+    
     x = x.astype(np.float32)
     return x
 
