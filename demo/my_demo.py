@@ -20,7 +20,7 @@ if torch.cuda.is_available():
 
 from ssd import build_ssd
 net = build_ssd('test', 300, 2)    # initialize SSD 类别2
-net.load_weights('../weights/ssd300_rice_20000.pth')
+net.load_weights('../weights/ssd300_rice_25000.pth')
 
 #加载没有标签的测试图片集
 # here we specify year (07 or 12) and dataset ('test', 'val', 'train')
