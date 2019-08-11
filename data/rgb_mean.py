@@ -24,7 +24,7 @@ def cal_mean():
         B_means.append(im_B_mean)
         G_means.append(im_G_mean)
         R_means.append(im_R_mean)
-        print('图片：{} 的 RGB平均值为 \n[{}，{}，{}]'.format(im_list, im_B_mean, im_G_mean, im_R_mean))
+        print('图片：{} 的 BGR平均值为 \n[{}，{}，{}]'.format(im_list, im_B_mean, im_G_mean, im_R_mean))
     # three sets  into a large set
     a = [B_means, G_means, R_means]
     mean = [0, 0, 0]
