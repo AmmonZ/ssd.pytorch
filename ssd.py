@@ -71,19 +71,19 @@ class SSD(nn.Module):
         conf = list()
 
         # apply vgg up to conv4_3 relu
-        for k in range(23):
+        for k in range(23): #0,1,2,3...22
             x = self.vgg[k](x)
 
         s = self.L2Norm(x)
         sources.append(s)
 
         # apply vgg up to fc7
-        for k in range(23, len(self.vgg)):
+        for k in range(23, len(self.vgg)): #23,24,25...
             x = self.vgg[k](x)
         sources.append(x)
 
         # apply extra layers and cache source layer outputs
-        for k, v in enumerate(self.extras):
+        for k, v in enumerate(self.extras):#k=0,1,2...7 ; v=对应的extra layer
             x = F.relu(v(x), inplace=True)
             if k % 2 == 1:
                 sources.append(x)
